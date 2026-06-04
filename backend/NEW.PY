@@ -1,5 +1,7 @@
 import pandas as pd
 
-news = pd.read_csv("../data/reliance_news.csv")
+stock_df = pd.read_csv("../data/RELIANCE_ANALYZED.csv")
 
-print(news["publishedAt"].head())
+print("First Date:", stock_df["Date"].min())
+print("Last Date:", stock_df["Date"].max())
+print("Total Rows:", len(stock_df))
