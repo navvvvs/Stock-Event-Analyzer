@@ -1,36 +1,63 @@
 import pandas as pd
 from transformers import pipeline
 
-# Load news
-df = pd.read_csv("../data/reliance_news_filtered.csv")
+# Companies to process
+companies = [
+    "RELIANCE",
+    "TCS",
+    "INFY",
+    "HDFCBANK",
+    "ICICIBANK",
+    "SBIN",
+    "WIPRO",
+    "LT"
+]
 
-# Sentiment model
+print("Loading FinBERT model...")
+
 classifier = pipeline(
     "sentiment-analysis",
     model="ProsusAI/finbert"
 )
 
-# Analyze first 10 articles initially
-results = []
+for company in companies:
 
-for _, row in df.iterrows():
+    print(f"\nProcessing {company.upper()} news...")
 
-    sentiment = classifier(str(row["title"]))[0]
+    # Load news
+    df = pd.read_csv(
+        f"../data/{company}_news_filtered.csv"
+    )
 
-    results.append({
-    "title": row["title"],
-    "publishedAt": row["publishedAt"],
-    "label": sentiment["label"],
-    "score": sentiment["score"]
-    })
+    results = []
 
-results_df = pd.DataFrame(results)
+    for _, row in df.iterrows():
 
-print(results_df.head())
+        sentiment = classifier(
+            str(row["title"])
+        )[0]
 
-results_df.to_csv(
-    "../data/reliance_news_sentiment.csv",
-    index=False
-)
-print(f"\nTotal Articles Analyzed: {len(results_df)}")
-print("Sentiment analysis completed")
+        results.append({
+            "title": row["title"],
+            "publishedAt": row["publishedAt"],
+            "label": sentiment["label"],
+            "score": sentiment["score"]
+        })
+
+    results_df = pd.DataFrame(results)
+
+    # Save results
+    results_df.to_csv(
+        f"../data/{company}_news_sentiment.csv",
+        index=False
+    )
+
+    print(
+        f"Saved {company}_news_sentiment.csv"
+    )
+
+    print(
+        f"Articles analyzed: {len(results_df)}"
+    )
+
+print("\nAll sentiment files created successfully!")

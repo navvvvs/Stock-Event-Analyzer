@@ -1,20 +1,58 @@
 import pandas as pd
 
-# Load stock data
-df = pd.read_csv("../data/RELIANCE.csv")
+companies = [
+    "RELIANCE",
+    "TCS",
+    "INFY",
+    "HDFCBANK",
+    "ICICIBANK",
+    "SBIN",
+    "WIPRO",
+    "LT"
+]
 
-# Convert Date column
-df['Date'] = pd.to_datetime(df['Date'])
+for company in companies:
 
-# Daily Return %
-df['Daily_Return'] = df['Close'].pct_change() * 100
-df['MA_7'] = df['Close'].rolling(window=7).mean()
+    print(f"\nProcessing {company}...")
 
-df['MA_30'] = df['Close'].rolling(window=30).mean()
+    df = pd.read_csv(
+        f"../data/{company}.csv"
+    )
 
-df['Volume_Change'] = df['Volume'].pct_change() * 100
+    df["Date"] = pd.to_datetime(
+        df["Date"]
+    )
 
-print(df[['Date', 'Close', 'Daily_Return', 'MA_7', 'MA_30', 'Volume_Change']].tail())
+    # Daily Return %
+    df["Daily_Return"] = (
+        df["Close"].pct_change() * 100
+    )
 
-# Save processed file
-df.to_csv("../data/RELIANCE_ANALYZED.csv", index=False)
+    # Moving Averages
+    df["MA_7"] = (
+        df["Close"]
+        .rolling(window=7)
+        .mean()
+    )
+
+    df["MA_30"] = (
+        df["Close"]
+        .rolling(window=30)
+        .mean()
+    )
+
+    # Volume Change %
+    df["Volume_Change"] = (
+        df["Volume"].pct_change() * 100
+    )
+
+    df.to_csv(
+        f"../data/{company}_ANALYZED.csv",
+        index=False
+    )
+
+    print(
+        f"Saved {company}_ANALYZED.csv"
+    )
+
+print("\nAll stock files analyzed successfully!")
